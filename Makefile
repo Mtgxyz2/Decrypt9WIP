@@ -133,20 +133,20 @@ submodules:
 	@-git submodule update --init --recursive
 
 gateway: common
-	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile EXEC_METHOD=GATEWAY
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile EXEC_METHOD=GATEWAY
 	@cp resources/LauncherTemplate.dat $(OUTPUT_D)/Launcher.dat
 	@dd if=$(OUTPUT).bin of=$(OUTPUT_D)/Launcher.dat bs=1497296 seek=1 conv=notrunc
 
 a9lh: common
-	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile EXEC_METHOD=A9LH
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile EXEC_METHOD=A9LH
 
 cakehax: submodules common
-	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile EXEC_METHOD=GATEWAY
-	@make dir_out=$(OUTPUT_D) name=$(TARGET).dat -C CakeHax bigpayload
+	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile EXEC_METHOD=GATEWAY
+	@$(MAKE) dir_out=$(OUTPUT_D) name=$(TARGET).dat -C CakeHax bigpayload
 	@dd if=$(OUTPUT).bin of=$(OUTPUT).dat bs=512 seek=160
     
 cakerop: cakehax
-	@make DATNAME=$(TARGET).dat DISPNAME=$(TARGET) GRAPHICS=../resources/CakesROP -C CakesROP
+	@$(MAKE) DATNAME=$(TARGET).dat DISPNAME=$(TARGET) GRAPHICS=../resources/CakesROP -C CakesROP
 	@mv CakesROP/CakesROP.nds $(OUTPUT_D)/$(TARGET).nds
 
 brahma: submodules a9lh
@@ -154,16 +154,16 @@ brahma: submodules a9lh
 	@cp $(OUTPUT).bin BrahmaLoader/data/payload.bin
 	@cp resources/BrahmaAppInfo BrahmaLoader/resources/AppInfo
 	@cp resources/BrahmaIcon.png BrahmaLoader/resources/icon.png
-	@make --no-print-directory -C BrahmaLoader APP_TITLE=$(TARGET)
+	@$(MAKE) --no-print-directory -C BrahmaLoader APP_TITLE=$(TARGET)
 	@mv BrahmaLoader/output/*.3dsx $(OUTPUT_D)
 	@mv BrahmaLoader/output/*.smdh $(OUTPUT_D)
 	
 release:
 	@rm -fr $(BUILD) $(OUTPUT_D) $(RELEASE)
-	@-make --no-print-directory gateway
-	@-make --no-print-directory cakerop
+	@-$(MAKE) --no-print-directory gateway
+	@-$(MAKE) --no-print-directory cakerop
 	@rm -fr $(BUILD) $(OUTPUT).bin $(OUTPUT).elf
-	@make --no-print-directory brahma
+	@$(MAKE) --no-print-directory brahma
 	@[ -d $(RELEASE) ] || mkdir -p $(RELEASE)
 	@[ -d $(RELEASE)/$(TARGET) ] || mkdir -p $(RELEASE)/$(TARGET)
 	@[ -d $(RELEASE)/scripts ] || mkdir -p $(RELEASE)/scripts
@@ -182,9 +182,9 @@ release:
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@-make clean --no-print-directory -C CakeHax
-	@-make clean --no-print-directory -C CakesROP
-	@-make clean --no-print-directory -C BrahmaLoader
+	@-$(MAKE) clean --no-print-directory -C CakeHax
+	@-$(MAKE) clean --no-print-directory -C CakesROP
+	@-$(MAKE) clean --no-print-directory -C BrahmaLoader
 	@rm -fr $(BUILD) $(OUTPUT_D) $(RELEASE)
 
 
